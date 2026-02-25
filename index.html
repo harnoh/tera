@@ -14,10 +14,10 @@
                 extend: {
                     colors: {
                         base: '#fdfdfd',
-                        main: '#005088',
-                        accent: '#11caa0',
+                        main: '#387a75', /* 森の緑（参考サイトのメインカラー） */
+                        accent: '#e48240', /* 温かみのあるオレンジ（参考サイトのアクセント） */
                         textMain: '#334155',
-                        lightGray: '#f8fafc',
+                        lightGray: '#f4f8f5', /* やや緑がかったオフホワイト */
                     },
                     fontFamily: {
                         sans: ['"Noto Sans JP"', 'sans-serif'],
@@ -70,7 +70,8 @@
         .bg-shape-1 {
             width: 40vw;
             height: 40vw;
-            background: rgba(17, 202, 160, 0.15);
+            background: rgba(56, 122, 117, 0.15);
+            /* main color with opacity */
             top: 20%;
             left: -10vw;
         }
@@ -78,7 +79,8 @@
         .bg-shape-2 {
             width: 50vw;
             height: 50vw;
-            background: rgba(0, 80, 136, 0.1);
+            background: rgba(228, 130, 64, 0.1);
+            /* accent color with opacity */
             bottom: 10%;
             right: -10vw;
         }
@@ -105,7 +107,7 @@
             transform: translateX(-50%);
             width: 40px;
             height: 3px;
-            background-color: #11caa0;
+            background-color: #e48240;
             border-radius: 2px;
         }
 
