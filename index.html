@@ -13,18 +13,19 @@
             theme: {
                 extend: {
                     colors: {
-                        base: '#f8fafc',
+                        base: '#fdfdfd',
                         main: '#005088',
                         accent: '#11caa0',
                         textMain: '#334155',
+                        lightGray: '#f8fafc',
                     },
                     fontFamily: {
                         sans: ['"Noto Sans JP"', 'sans-serif'],
                         serif: ['"Noto Serif JP"', 'serif'],
                     },
                     boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(0, 80, 136, 0.05)',
-                        'glass-hover': '0 12px 48px 0 rgba(0, 80, 136, 0.1)',
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.05)',
+                        'floating': '0 10px 40px rgba(0, 80, 136, 0.1)',
                     }
                 }
             }
@@ -47,55 +48,39 @@
 
     <style>
         body {
-            background-color: #f8fafc;
+            background-color: #fdfdfd;
             color: #334155;
             font-family: 'Noto Sans JP', sans-serif;
             overflow-x: hidden;
-            font-size: 1.125rem;
-            /* 高齢者向けに基本フォントサイズをやや大きめに設定 */
+            font-size: 1rem;
             line-height: 1.8;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* アンチグラビティ 背景のあしらい */
+        /* 控えめな背景のあしらい */
         .bg-shape {
-            position: fixed;
+            position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(120px);
             z-index: -1;
             pointer-events: none;
+            opacity: 0.4;
         }
 
         .bg-shape-1 {
-            width: 50vw;
-            height: 50vw;
-            background: rgba(17, 202, 160, 0.2);
-            top: -10vw;
+            width: 40vw;
+            height: 40vw;
+            background: rgba(17, 202, 160, 0.15);
+            top: 20%;
             left: -10vw;
         }
 
         .bg-shape-2 {
-            width: 60vw;
-            height: 60vw;
-            background: rgba(0, 80, 136, 0.15);
-            bottom: -20vw;
+            width: 50vw;
+            height: 50vw;
+            background: rgba(0, 80, 136, 0.1);
+            bottom: 10%;
             right: -10vw;
-        }
-
-        .bg-cross {
-            position: fixed;
-            z-index: -1;
-            opacity: 0.05;
-            pointer-events: none;
-        }
-
-        /* Glassmorphism UI */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 1.5rem;
         }
 
         /* Smooth Reveal 初期状態 */
@@ -105,265 +90,415 @@
             transform: translateY(30px);
         }
 
-        /* 強調テキスト用グラデーション */
-        .text-gradient {
-            background: linear-gradient(135deg, #005088, #11caa0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* セクションタイトル装飾 */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background-color: #11caa0;
+            border-radius: 2px;
+        }
+
+        .hero-clip {
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
     </style>
 </head>
 
-<body>
+<body class="pt-[90px]">
 
-    <!-- 背景のアンチグラビティ要素 -->
+    <!-- 背景のアンチグラビティ要素（控えめに維持） -->
     <div class="bg-shape bg-shape-1"></div>
     <div class="bg-shape bg-shape-2"></div>
 
-    <!-- 医療十字モチーフ -->
-    <svg class="bg-cross top-1/4 right-1/4 w-32 h-32 text-main" viewBox="0 0 24 24" fill="currentColor">
-        <path
-            d="M19,10.5H13.5V5a1.5,1.5,0,0,0-3,0v5.5H5a1.5,1.5,0,0,0,0,3h5.5V19a1.5,1.5,0,0,0,3,0V13.5H19a1.5,1.5,0,0,0,0-3Z" />
-    </svg>
-    <svg class="bg-cross bottom-1/3 left-1/4 w-48 h-48 text-accent" viewBox="0 0 24 24" fill="currentColor">
-        <path
-            d="M19,10.5H13.5V5a1.5,1.5,0,0,0-3,0v5.5H5a1.5,1.5,0,0,0,0,3h5.5V19a1.5,1.5,0,0,0,3,0V13.5H19a1.5,1.5,0,0,0,0-3Z" />
-    </svg>
-
-    <!-- Header -->
-    <header
-        class="fixed w-full top-0 z-50 transition-all duration-300 glass-panel border-b border-white/20 rounded-none bg-white/60">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i data-lucide="eye" class="w-8 h-8 text-main"></i>
+    <!-- Header (Sticky) -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-300 bg-white shadow-sm h-[90px] flex items-center">
+        <div class="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <i data-lucide="eye" class="w-8 h-8 text-main group-hover:text-accent transition-colors"></i>
                 <h1 class="text-2xl font-serif font-bold text-main tracking-widest">寺西眼科</h1>
-            </div>
-            <div class="hidden md:flex items-center gap-6">
-                <p class="font-medium text-main">当日受診可能・予約不要</p>
-                <a href="tel:08020132868"
-                    class="flex items-center gap-2 bg-main text-white px-6 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-glass">
+            </a>
+
+            <!-- PC Navigation -->
+            <nav class="hidden lg:flex items-center gap-8">
+                <a href="#about" class="font-medium text-gray-600 hover:text-main transition">当院について</a>
+                <a href="#features" class="font-medium text-gray-600 hover:text-main transition">当院の特徴</a>
+                <a href="#medical" class="font-medium text-gray-600 hover:text-main transition">診療案内</a>
+                <a href="#access" class="font-medium text-gray-600 hover:text-main transition">アクセス</a>
+            </nav>
+
+            <!-- Contact/Booking -->
+            <div class="hidden md:flex flex-col items-end justify-center">
+                <span class="text-xs font-bold text-accent mb-0.5">当日受診可能・予約不要</span>
+                <a href="tel:08020132868" class="flex items-center gap-2 text-main hover:text-accent transition">
                     <i data-lucide="phone" class="w-5 h-5"></i>
-                    <span class="font-bold tracking-wider">080-2013-2868</span>
+                    <span class="font-bold text-xl tracking-wider">080-2013-2868</span>
                 </a>
             </div>
+
+            <!-- Mobile Menu Button (Hamburger) - 構造のみ -->
+            <button class="lg:hidden text-main p-2">
+                <i data-lucide="menu" class="w-7 h-7"></i>
+            </button>
         </div>
     </header>
 
-    <!-- First View (Hero) -->
-    <section class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
-        <div class="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center relative z-10">
-            <div class="space-y-8 reveal-up">
-                <!-- Parallax Text -->
-                <div class="parallax-element" data-speed="0.05">
-                    <p class="text-accent font-bold text-lg mb-4 tracking-widest flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
-                        地域に根ざした眼科医療
-                    </p>
-                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight text-main mb-6">
-                        高品質な医療に<br>
-                        真心をそえて
-                    </h2>
-                    <p class="text-xl text-gray-600 font-medium">
-                        最新の設備と温かな対応で、<br>
-                        患者様の「視る喜び」をお守りします。
-                    </p>
-                </div>
+    <!-- Hero Section -->
+    <section class="relative bg-lightGray pb-20 lg:pb-32 overflow-hidden hero-clip">
+        <div class="max-w-7xl mx-auto px-6 pt-12 lg:pt-20 grid lg:grid-cols-2 gap-12 items-center">
+            <div class="reveal-up z-10 space-y-8 order-2 lg:order-1">
+                <p class="text-accent font-bold text-lg tracking-widest flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    地域に根ざした眼科医療
+                </p>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight text-main mb-6">
+                    高品質な医療に<br>
+                    真心をそえて
+                </h2>
+                <p class="text-lg text-gray-600 font-medium leading-relaxed max-w-lg">
+                    最新の設備と温かな対応で、患者様の「視る喜び」をお守りします。目の異常を感じたら、いつでもお気軽にご来院ください。
+                </p>
 
-                <div class="glass-panel p-6 inline-block shadow-glass">
-                    <div class="flex items-center gap-3 text-main mb-2">
-                        <i data-lucide="clock" class="w-6 h-6 text-accent"></i>
-                        <h3 class="font-bold text-xl">当日受診可能・予約不要</h3>
-                    </div>
-                    <p class="text-gray-600">目の異常を感じたら、いつでもお気軽にご来院ください。</p>
-
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
                     <a href="tel:08020132868"
-                        class="md:hidden mt-6 flex items-center justify-center gap-2 bg-main text-white px-6 py-4 rounded-full shadow-glass width-full text-lg w-full">
-                        <i data-lucide="phone" class="w-6 h-6"></i>
-                        <span class="font-bold tracking-wider">電話をかける</span>
+                        class="flex items-center justify-center gap-2 bg-main text-white px-8 py-4 rounded-full shadow-floating hover:-translate-y-1 transition duration-300">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                        <span class="font-bold tracking-widest">お電話はこちら</span>
+                    </a>
+                    <a href="#medical"
+                        class="flex items-center justify-center gap-2 bg-white text-main border-2 border-main px-8 py-4 rounded-full hover:bg-lightGray transition duration-300">
+                        <span class="font-bold">診療案内を見る</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Hero Image / Visual -->
-            <div class="relative h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-glass reveal-up parallax-element"
+            <!-- Hero Image -->
+            <div class="relative h-[400px] lg:h-[600px] rounded-3xl overflow-hidden shadow-floating reveal-up order-1 lg:order-2 parallax-element"
                 data-speed="-0.03">
-                <img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                <img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                     alt="明るく清潔な医療設備" class="absolute inset-0 w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-main/40 to-transparent"></div>
             </div>
         </div>
     </section>
 
-    <!-- 3 Features Section -->
-    <section class="py-24 relative z-10">
-        <div class="max-w-6xl mx-auto px-6">
+    <!-- News Section (NEW) -->
+    <section class="py-16 -mt-16 relative z-20">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="bg-white rounded-2xl shadow-card p-8 md:p-10 reveal-up flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/4">
+                    <h2
+                        class="text-xl font-bold text-main flex items-center gap-2 border-b-2 border-accent pb-2 inline-block">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        お知らせ
+                    </h2>
+                </div>
+                <div class="md:w-3/4">
+                    <ul class="space-y-4">
+                        <li
+                            class="border-b border-gray-100 pb-4 last:border-0 last:pb-0 block sm:flex items-center gap-4 hover:bg-gray-50/50 p-2 -mx-2 rounded transition cursor-pointer">
+                            <div class="flex items-center gap-3 min-w-[160px] mb-2 sm:mb-0">
+                                <span class="text-sm text-gray-500 font-medium">2026.02.20</span>
+                                <span class="text-xs bg-main/10 text-main font-bold px-2 py-1 rounded">お知らせ</span>
+                            </div>
+                            <span
+                                class="font-medium text-gray-800 hover:text-main transition line-clamp-1">春の花粉症対策について。お早めの受診をおすすめします。</span>
+                        </li>
+                        <li
+                            class="border-b border-gray-100 pb-4 last:border-0 last:pb-0 block sm:flex items-center gap-4 hover:bg-gray-50/50 p-2 -mx-2 rounded transition cursor-pointer">
+                            <div class="flex items-center gap-3 min-w-[160px] mb-2 sm:mb-0">
+                                <span class="text-sm text-gray-500 font-medium">2026.01.15</span>
+                                <span class="text-xs bg-accent/20 text-accent font-bold px-2 py-1 rounded">重要</span>
+                            </div>
+                            <span
+                                class="font-medium text-gray-800 hover:text-main transition line-clamp-1">年末年始の休診日のお知らせ</span>
+                        </li>
+                        <li
+                            class="border-b border-gray-100 pb-4 last:border-0 last:pb-0 block sm:flex items-center gap-4 hover:bg-gray-50/50 p-2 -mx-2 rounded transition cursor-pointer">
+                            <div class="flex items-center gap-3 min-w-[160px] mb-2 sm:mb-0">
+                                <span class="text-sm text-gray-500 font-medium">2025.12.01</span>
+                                <span class="text-xs bg-main/10 text-main font-bold px-2 py-1 rounded">お知らせ</span>
+                            </div>
+                            <span
+                                class="font-medium text-gray-800 hover:text-main transition line-clamp-1">新しい眼底三次元画像解析装置（OCT）を導入しました。</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6 text-right">
+                        <a href="#"
+                            class="text-sm font-bold text-main hover:text-accent transition flex items-center justify-end gap-1">
+                            お知らせ一覧を見る <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 relative z-10 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16 reveal-up">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-main mb-4">当院の3つの特徴</h2>
-                <div class="w-16 h-1 bg-accent mx-auto rounded-full"></div>
+                <span class="text-sm font-bold text-accent tracking-widest block mb-2">FEATURES</span>
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-main section-title">当院の特徴</h2>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <div class="glass-panel p-8 text-center transition-all hover:shadow-glass-hover reveal-up group">
+                <div
+                    class="bg-lightGray rounded-2xl p-8 transition-all hover:-translate-y-2 hover:shadow-card reveal-up group border border-gray-100">
                     <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-glass mb-6 floating-icon text-main">
-                        <i data-lucide="sun" class="w-12 h-12"></i>
+                        class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6 floating-icon text-main">
+                        <i data-lucide="sun" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-main mb-4 border-b border-gray-200 pb-4">日帰り<br>白内障手術</h3>
-                    <p class="text-gray-700 text-left">
+                    <h3 class="text-2xl font-bold text-main mb-4">日帰り<br>白内障手術</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
                         最新の手術機器を導入し、ご負担の少ない日帰り手術を行っております。手術後のケアも丁寧に対応いたします。
                     </p>
                 </div>
 
                 <!-- Feature 2 -->
                 <div
-                    class="glass-panel p-8 text-center transition-all hover:shadow-glass-hover reveal-up group delay-100">
+                    class="bg-lightGray rounded-2xl p-8 transition-all hover:-translate-y-2 hover:shadow-card reveal-up group delay-100 border border-gray-100">
                     <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-glass mb-6 floating-icon text-accent">
-                        <i data-lucide="droplets" class="w-12 h-12"></i>
+                        class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6 floating-icon text-accent">
+                        <i data-lucide="droplets" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-main mb-4 border-b border-gray-200 pb-4">涙道疾患<br>涙目治療</h3>
-                    <p class="text-gray-700 text-left">
+                    <h3 class="text-2xl font-bold text-main mb-4">涙道疾患<br>涙目治療</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
                         「いつも涙が出る」というお悩みに対し、専門的な診断と治療（涙道内視鏡など）で根本的な解決を目指します。
                     </p>
                 </div>
 
                 <!-- Feature 3 -->
                 <div
-                    class="glass-panel p-8 text-center transition-all hover:shadow-glass-hover reveal-up group delay-200">
+                    class="bg-lightGray rounded-2xl p-8 transition-all hover:-translate-y-2 hover:shadow-card reveal-up group delay-200 border border-gray-100">
                     <div
-                        class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-glass mb-6 floating-icon text-main">
-                        <i data-lucide="smartphone" class="w-12 h-12"></i>
+                        class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-6 floating-icon text-main">
+                        <i data-lucide="smartphone" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-main mb-4 border-b border-gray-200 pb-4">現代病<br>ドライアイ</h3>
-                    <p class="text-gray-700 text-left">
+                    <h3 class="text-2xl font-bold text-main mb-4">現代病<br>ドライアイ</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
                         スマートフォンやPCの普及で増えるドライアイ。点眼治療だけでなく、生活指導や最新の治療法を提案いたします。
                     </p>
                 </div>
             </div>
+
+            <!-- Network Banner -->
+            <div
+                class="mt-12 bg-main/5 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 reveal-up">
+                <div>
+                    <h4 class="text-xl font-bold text-main mb-2 flex items-center gap-2">
+                        <i data-lucide="network" class="w-6 h-6 text-accent"></i>
+                        地域医療ネットワーク
+                    </h4>
+                    <p class="text-gray-600 text-sm">地域の総合病院と密接に連携し、患者様にとって最適な医療を迅速に提供可能です。</p>
+                </div>
+                <div class="bg-white px-6 py-4 rounded-xl shadow-sm border border-gray-100 whitespace-nowrap">
+                    <p class="font-bold text-main">
+                        市立旭川病院 登録医 <span class="text-accent ml-2 text-sm border-l border-gray-200 pl-2">番号：221</span>
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Facility Outline -->
-    <section class="py-24 relative z-10 overflow-hidden">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="glass-panel overflow-hidden reveal-up">
-                <div class="grid md:grid-cols-2">
-                    <div class="relative h-[400px] md:h-auto overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                            alt="明るく清潔な待合室" class="absolute inset-0 w-full h-full object-cover parallax-element"
-                            data-speed="0.05">
-                    </div>
-                    <div class="p-10 md:p-16 flex flex-col justify-center">
-                        <h2 class="text-3xl font-serif font-bold text-main mb-6">心やすらぐ癒やしの空間</h2>
-                        <ul class="space-y-6">
-                            <li class="flex items-start gap-4">
-                                <div class="bg-blue-50 p-2 rounded-full text-accent mt-1">
-                                    <i data-lucide="sun-dim" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-xl text-main">天窓のある明るい待合室</h4>
-                                    <p class="text-gray-600">自然光が降り注ぐ開放的な空間で、リラックスしてお待ちいただけます。</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <div class="bg-blue-50 p-2 rounded-full text-accent mt-1">
-                                    <i data-lucide="person-standing" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-xl text-main">完全バリアフリー対応</h4>
-                                    <p class="text-gray-600">車椅子やベビーカーの方でも安心のフラットな設計です。</p>
-                                </div>
-                            </li>
-                            <li class="flex items-start gap-4">
-                                <div class="bg-blue-50 p-2 rounded-full text-accent mt-1">
-                                    <i data-lucide="car" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-xl text-main">駐車場10台完備</h4>
-                                    <p class="text-gray-600">お車でのご来院も安心な広々とした専用駐車場をご用意。</p>
-                                </div>
-                            </li>
-                        </ul>
+    <!-- Medical & Facility Info -->
+    <section id="medical" class="py-20 relative z-10 bg-lightGray">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <!-- Medical Information -->
+                <div class="reveal-up">
+                    <span class="text-sm font-bold text-accent tracking-widest block mb-2">MEDICAL</span>
+                    <h2 class="text-3xl font-serif font-bold text-main section-title mb-10">診療案内</h2>
+
+                    <ul class="grid grid-cols-2 gap-4">
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="eye" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            一般眼科診療
+                        </li>
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="sun" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            白内障手術
+                        </li>
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="scan-eye" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            緑内障検診
+                        </li>
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="droplets" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            涙道疾患
+                        </li>
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            ドライアイ
+                        </li>
+                        <li
+                            class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 font-bold text-main flex items-center gap-3 hover:border-accent transition group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-main/5 flex items-center justify-center group-hover:bg-accent/10 transition">
+                                <i data-lucide="glasses" class="w-4 h-4 text-accent"></i>
+                            </div>
+                            眼鏡・コンタクト
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Facility Info -->
+                <div class="reveal-up delay-100">
+                    <span class="text-sm font-bold text-accent tracking-widest block mb-2">FACILITY</span>
+                    <h2 class="text-3xl font-serif font-bold text-main section-title mb-10">施設について</h2>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                alt="明るく清潔な待合室" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-lg text-main mb-4 border-b border-gray-100 pb-3">心やすらぐ癒やしの空間</h3>
+                            <ul class="space-y-3 text-sm text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-accent"></i>
+                                    自然光が降り注ぐ天窓のある明るい待合室
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-accent"></i>
+                                    車椅子やベビーカーの方でも安心の完全バリアフリー
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check-circle-2" class="w-4 h-4 text-accent"></i>
+                                    広々とした専用駐車場を10台完備
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Network Section -->
-    <section class="py-24 relative z-10">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="glass-panel p-10 md:p-12 text-center reveal-up border-t-4 border-t-accent">
-                <i data-lucide="network" class="w-16 h-16 text-main mx-auto mb-6"></i>
-                <h2 class="text-3xl font-serif font-bold text-main mb-6">地域医療ネットワーク</h2>
-                <p class="text-xl mb-4 text-gray-700">高度な検査や入院が必要な場合も、ご安心ください。</p>
-                <div class="inline-block bg-white px-8 py-4 rounded-xl shadow-glass border border-gray-100">
-                    <p class="font-bold text-2xl text-main">
-                        市立旭川病院 登録医 <span class="text-accent text-xl">（番号：221）</span>
-                    </p>
+    <!-- Access & Footer Sections -->
+    <section id="access" class="py-20 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal-up">
+                <span class="text-sm font-bold text-accent tracking-widest block mb-2">ACCESS</span>
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-main section-title">アクセス・診療時間</h2>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 items-center reveal-up">
+                <!-- Map Placeholder -->
+                <div
+                    class="bg-gray-200 h-[350px] rounded-2xl flex flex-col items-center justify-center text-gray-500 shadow-inner">
+                    <i data-lucide="map" class="w-12 h-12 mb-2 opacity-50"></i>
+                    <p class="font-medium">Google Map Embed Area</p>
+                    <p class="text-sm mt-1">〒070-0000 北海道旭川市〇〇町〇-〇</p>
                 </div>
-                <p class="mt-6 text-gray-600">
-                    地域の総合病院と密接に連携し、患者様にとって最適な医療を迅速に提供できる体制を整えております。
-                </p>
+
+                <!-- Info -->
+                <div>
+                    <div class="mb-8">
+                        <h3 class="text-2xl font-bold text-main mb-2">寺西眼科</h3>
+                        <p class="text-gray-600 flex items-center gap-2 mb-4">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-accent"></i>
+                            北海道旭川市〇〇町〇-〇
+                        </p>
+                        <a href="tel:08020132868"
+                            class="inline-flex items-center gap-2 text-3xl font-bold tracking-wider text-main hover:text-accent transition">
+                            <i data-lucide="phone" class="w-6 h-6"></i>
+                            080-2013-2868
+                        </a>
+                        <p class="text-xs font-bold text-accent mt-1 pl-8">当日受診可能・予約不要</p>
+                    </div>
+
+                    <div class="bg-lightGray rounded-xl p-6 border border-gray-200">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="border-b-2 border-main/20 text-main">
+                                    <th class="py-2 font-bold">診療時間</th>
+                                    <th class="py-2 text-center w-8">月</th>
+                                    <th class="py-2 text-center w-8">火</th>
+                                    <th class="py-2 text-center w-8">水</th>
+                                    <th class="py-2 text-center w-8">木</th>
+                                    <th class="py-2 text-center w-8">金</th>
+                                    <th class="py-2 text-center w-8 text-blue-600">土</th>
+                                    <th class="py-2 text-center w-8 text-red-500">日</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700">
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-3 font-medium">09:00 - 12:30</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center text-blue-600">●</td>
+                                    <td class="py-3 text-center text-red-300">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-medium">14:00 - 17:30</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center text-red-300">-</td>
+                                    <td class="py-3 text-center">●</td>
+                                    <td class="py-3 text-center text-red-300">-</td>
+                                    <td class="py-3 text-center text-red-300">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-4 text-xs text-gray-500 bg-white px-3 py-2 rounded-lg border border-gray-100">
+                            <strong class="text-red-500">休診日：</strong>木曜午後・土曜午後・日曜・祝日
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-main text-white pt-16 pb-8 relative z-10">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="grid md:grid-cols-2 gap-12 mb-12 border-b border-white/20 pb-12">
-                <div>
-                    <h2 class="text-3xl font-serif font-bold tracking-widest mb-6">寺西眼科</h2>
-                    <p class="flex items-center gap-2 mb-2">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-accent"></i>
-                        〒070-0000 北海道旭川市〇〇町〇-〇
-                    </p>
-                    <a href="tel:08020132868"
-                        class="inline-flex items-center gap-2 mt-4 text-2xl font-bold bg-white/10 px-6 py-3 rounded-xl hover:bg-white/20 transition">
-                        <i data-lucide="phone" class="w-6 h-6 text-accent"></i>
-                        080-2013-2868
-                    </a>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4 border-b border-white/20 pb-2">診療時間</h3>
-                    <table class="w-full text-left bg-white/5 rounded-xl overscroll-hidden">
-                        <tr class="border-b border-white/10">
-                            <th class="p-3 font-normal">診療時間</th>
-                            <th class="p-3">月</th>
-                            <th class="p-3">火</th>
-                            <th class="p-3">水</th>
-                            <th class="p-3">木</th>
-                            <th class="p-3">金</th>
-                            <th class="p-3 text-accent">土</th>
-                            <th class="p-3 text-red-300">日</th>
-                        </tr>
-                        <tr class="border-b border-white/10">
-                            <td class="p-3">09:00 - 12:30</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3 text-red-300">休</td>
-                        </tr>
-                        <tr>
-                            <td class="p-3">14:00 - 17:30</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3 text-red-300">休</td>
-                            <td class="p-3">●</td>
-                            <td class="p-3 text-red-300">休</td>
-                            <td class="p-3 text-red-300">休</td>
-                        </tr>
-                    </table>
-                    <p class="mt-4 text-sm text-gray-300">※休診日：木曜午後・土曜午後・日曜・祝日</p>
-                </div>
+    <footer class="bg-main text-white py-8 border-t-4 border-accent relative z-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="eye" class="w-6 h-6 text-white/50"></i>
+                <span class="font-serif font-bold tracking-widest text-lg">寺西眼科</span>
             </div>
-            <div class="text-center text-sm text-gray-400">
+            <nav class="flex gap-6 text-sm text-gray-300">
+                <a href="#" class="hover:text-white transition">トップ</a>
+                <a href="#about" class="hover:text-white transition">当院について</a>
+                <a href="#medical" class="hover:text-white transition">診療案内</a>
+                <a href="#access" class="hover:text-white transition">アクセス</a>
+            </nav>
+            <div class="text-xs text-gray-400">
                 &copy; Teranishi Eye Clinic. All Rights Reserved.
             </div>
         </div>
@@ -374,91 +509,61 @@
         // Initialize Icons
         lucide.createIcons();
 
-        // Ensure DOM is fully loaded before animating
         document.addEventListener("DOMContentLoaded", (event) => {
             gsap.registerPlugin(ScrollTrigger);
 
-            // 1. Floating Effect (Background Shapes)
-            // ゆっくりと上品に動くように duration を長く、ease を sine に設定
-            gsap.to('.bg-shape-1', {
-                y: 80,
-                x: 40,
-                ease: "sine.inOut",
-                duration: 12,
-                repeat: -1,
-                yoyo: true
-            });
-
-            gsap.to('.bg-shape-2', {
-                y: -60,
-                x: -50,
-                ease: "sine.inOut",
-                duration: 15,
-                repeat: -1,
-                yoyo: true
-            });
-
-            gsap.to('.bg-cross', {
-                y: 30,
-                rotation: 15,
-                ease: "sine.inOut",
-                duration: 8,
-                repeat: -1,
-                yoyo: true,
-                stagger: 2
-            });
-
-            // Icons Floating Effect (Features Section)
-            // 水中のように微細にフワフワと
+            // Floating Effects for Icons & Shapes
             gsap.to('.floating-icon', {
-                y: -12,
+                y: -6,
                 ease: "sine.inOut",
-                duration: 2.5,
+                duration: 2,
                 repeat: -1,
                 yoyo: true,
-                stagger: {
-                    each: 0.4,
-                    from: "random"
-                }
+                stagger: { each: 0.3, from: "random" }
             });
 
-            // 2. Parallax Scrolling
-            // スクロールに応じた視差効果
+            gsap.to('.bg-shape-1', {
+                y: 50, x: 20, ease: "sine.inOut", duration: 15, repeat: -1, yoyo: true
+            });
+            gsap.to('.bg-shape-2', {
+                y: -40, x: -30, ease: "sine.inOut", duration: 18, repeat: -1, yoyo: true
+            });
+
+            // Parallax Scrolling for Hero Image
             gsap.utils.toArray('.parallax-element').forEach(el => {
                 const speed = parseFloat(el.getAttribute('data-speed')) || 0;
-
                 gsap.to(el, {
                     y: () => -ScrollTrigger.maxScroll(window) * speed,
                     ease: "none",
                     scrollTrigger: {
-                        trigger: "body",
-                        start: "top top",
-                        end: "bottom bottom",
-                        scrub: 1.5 // より滑らかに追従
+                        trigger: "body", start: "top top", end: "bottom bottom", scrub: true
                     }
                 });
             });
 
-            // 3. Smooth Reveal
-            // 要素が画面に入った際に、重力を感じさせずフワッと浮かび上がる
-            gsap.utils.toArray('.reveal-up').forEach((el, i) => {
-                // Ensure visibility is reset right before animation
-                gsap.set(el, { autoAlpha: 0, y: 40 });
-
+            // Smooth Reveal Setup
+            gsap.utils.toArray('.reveal-up').forEach((el) => {
+                gsap.set(el, { autoAlpha: 0, y: 30 });
                 ScrollTrigger.create({
                     trigger: el,
-                    start: "top 85%", // 高齢者でも気付きやすいよう早めに出現
+                    start: "top 85%",
                     onEnter: () => {
-                        gsap.to(el, {
-                            autoAlpha: 1, // opacity and visibility
-                            y: 0,
-                            duration: 1.2,
-                            ease: "power2.out",
-                            overwrite: "auto"
-                        });
+                        gsap.to(el, { autoAlpha: 1, y: 0, duration: 1.0, ease: "power2.out" });
                     },
-                    once: true // 一度出現したらそのまま（チカチカしないように）
+                    once: true
                 });
+            });
+
+            // Header Scroll Effect
+            const header = document.querySelector('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('shadow-md');
+                    header.classList.remove('shadow-sm');
+                } else {
+                    header.classList.remove('shadow-md');
+                    header.classList.add('shadow-sm');
+                }
             });
         });
     </script>
